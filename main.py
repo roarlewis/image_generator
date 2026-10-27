@@ -7,10 +7,18 @@ from image_helpers import *
 from pathlib import Path
 from face_shapes import *
 
+import urllib.request
+from io import BytesIO
+
 det = dlib.get_frontal_face_detector()
 predictor = dlib.shape_predictor('data/shape_predictor_68_face_landmarks.dat')
 
-img = cv.imread('family.JPEG')
+# img = cv.imread('family.JPEG')
+
+response = urllib.request.urlopen("https://faceshapedetector.app/face-shapes/round-face-shape-example.webp")
+img_array = np.array( bytearray(response.read()), dtype=np.uint8 )
+img = cv.imdecode( img_array, -1)
+
 # img = cv.resize(img, (500, 500), interpolation=cv.INTER_LINEAR)
 img_gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
 face_rects = det(img_gray, 1)

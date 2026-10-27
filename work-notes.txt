@@ -1,0 +1,108 @@
+Rory & Lewis pair coding session
+Tues, Oct 27, 2026
+Rory's office
+
+– Lewis uploaded his code to this repo:
+https://github.com/roarlewis/image_generator
+
+– We started with the Flask quick start guide:
+https://flask.palletsprojects.com/en/stable/quickstart/#variable-rules
+
+– Tried to do dev on Rory's laptop with remote testing, but Rory's IP
+  address was not accessible from Lewis'. Tried fiddling with
+  different ports (sudo to 80 vs 8000) and being on the same WiFi
+  network, but it didn't work. Maybe IT has a firewall on my laptop.
+
+
+– Google (AI) gave us this info about returning a file from Flask:
+
+import io
+from flask import Flask, send_file
+
+app = Flask(__name__)
+
+@app.route('/download-text')
+def download_text():
+    # 1. Create an in-memory file object
+    mem_file = io.BytesIO()
+    
+    # 2. Write data to the buffer
+    mem_file.write(b"Hello, this is a dynamically generated text file!")
+    
+    # 3. CRITICAL: Seek back to the beginning of the file pointer before sending
+    mem_file.seek(0)
+    
+    # 4. Return using send_file with an explicit download name and mimetype
+    return send_file(
+        mem_file,
+        mimetype="text/plain",
+        as_attachment=True,
+        download_name="dynamic_hello.txt"
+    )
+
+– Rory clone the repo. Initially tried it via HTTPS, but then was not
+  able to commit code later. Then tried cloning via SSH, which worked
+  (i.e., enabled Rory to commit code to the repo) because Rory had his
+  GitHub credentials already setup via SSH.
+
+– Tried to get all the project dependencies installed on Rory's
+  laptop, with some issues. Rory's system has two Pythons installed:
+  3.9 (system Python) and 3.14 (Homebrew Python). Originally had
+  installed Flask via 3.9. Created a requirements.txt for all the
+  libraries that Lewis used. Installing some of them was giving
+  errors. Begrudingly started using virtualenv. Followed steps in
+  quick start guide here:
+  https://www.w3schools.com/python/python_virtualenv.asp
+
+  1. python -m venv lewis_image_generator
+  2. source lewis_image_generator/bin/activate
+     (This gives a command prompt like: "(lewis_image_generator) ... % " )
+  3. pip3.14 install now almost worked for requirements.txt
+
+– Needed to install some stuff via Homebrew:
+  brew install cmake
+  brew install dlib
+
+– Created a new requiremeents.txt file with pip3.14 freeze (to get all
+  the version numbers). git committed this change.
+
+– Actually started development.
+
+– Created a simple Flask app with one route: takes a URL, returns
+  Lewis' modified image using send_file() example above.
+
+– Took Lewis' main.py and copied it into process_image.py, putting the
+  code into a function that takes a URL, downloads the image at that
+  URL, and then modifies the images. Using some randomly googled help pages:
+  – https://www.geeksforgeeks.org/python/python-opencv-cv2-imread-method/
+  – https://requests.readthedocs.io/en/latest/user/quickstart/#binary-response-content
+  
+  Came up with this:
+    response = urllib.request.urlopen(url)
+    
+    img_array = np.array( bytearray(response.read()), dtype=np.uint8 )
+    img = cv.imdecode( img_array, -1)
+
+  Flask then calls that function.
+
+– Next step is to convert the OpenCV image object into an image
+  file. We were going to simply use JPEG, but it might be wise to try
+  to match the content type of the originally requested URL (could
+  have implications for making the page display properly). To do that,
+  would need to get file extension from the original URL, or use
+  urllib to get the response's content type.
+
+– Finally, we can return the image with send_file()
+
+– I will now submit this file and all the code we worked on:
+  – process_image.py
+  – flask_app/
+    – image_gen.py
+    - templates/
+      - error.html
+
+– Also adding .gitignore (to ignore Emacs backup files *~) and also
+  Python compiled cache files (*.pyc)
+
+– Deactivating the virtualenv with the command:
+  deactivate
