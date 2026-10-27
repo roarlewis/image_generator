@@ -59,6 +59,14 @@ def download_text():
      (This gives a command prompt like: "(lewis_image_generator) ... % " )
   3. pip3.14 install now almost worked for requirements.txt
 
+  (Note that the virtual environment name lewis_image_generator does
+  not need to match the name of any other folder, file, or Python
+  module. In fact I think it seems like it's probably better if it
+  doesn't. Also, this folder is only for holding Python libraries. It
+  should not hold any other project code. It seems that a standard way
+  to do this is to put the virual environment folder in the same root
+  folder as a folder containing all over project code.)
+
 – Needed to install some stuff via Homebrew:
   brew install cmake
   brew install dlib
